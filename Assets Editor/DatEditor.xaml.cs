@@ -524,6 +524,7 @@ namespace Assets_Editor
             A_FlagWrap.IsChecked = CurrentObjectAppearance.Flags.HasWrap;
             A_FlagUnwrap.IsChecked = CurrentObjectAppearance.Flags.HasUnwrap;
             A_FlagDecoItemKit.IsChecked = CurrentObjectAppearance.Flags.HasDecoItemKit;
+            A_FlagDualWielding.IsChecked = CurrentObjectAppearance.Flags.HasDualWielding;
             A_FlagTopeffect.IsChecked = CurrentObjectAppearance.Flags.HasTop;
             A_FlagChangedToExpire.IsChecked = CurrentObjectAppearance.Flags.Changedtoexpire != null;
             A_FlagChangedToExpireId.Value = (CurrentObjectAppearance.Flags.Changedtoexpire != null && CurrentObjectAppearance.Flags.Changedtoexpire.HasFormerObjectTypeid) ? (int)CurrentObjectAppearance.Flags.Changedtoexpire.FormerObjectTypeid : 0;
@@ -1255,6 +1256,11 @@ namespace Assets_Editor
                 CurrentObjectAppearance.Flags.DecoItemKit = true;
             else if (CurrentObjectAppearance.Flags.HasDecoItemKit)
                 CurrentObjectAppearance.Flags.ClearDecoItemKit();
+
+            if ((bool)A_FlagDualWielding.IsChecked)
+                CurrentObjectAppearance.Flags.DualWielding = true;
+            else if (CurrentObjectAppearance.Flags.HasDualWielding)
+                CurrentObjectAppearance.Flags.ClearDualWielding();
 
             if ((bool)A_FlagTopeffect.IsChecked)
                 CurrentObjectAppearance.Flags.Topeffect = true;
