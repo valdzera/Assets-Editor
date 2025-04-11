@@ -261,6 +261,7 @@
                                                 <ComboBoxItem Content="Boots"/>
                                                 <ComboBoxItem Content="Ring"/>
                                                 <ComboBoxItem Content="Arrow"/>
+                                                <ComboBoxItem Content="Dual Wielding"/>
                                             </ComboBox>
                                         </StackPanel>
                                         <StackPanel Width="320" Orientation="Horizontal" HorizontalAlignment="Left" Height="20" Margin="0,5,0,0">
@@ -304,6 +305,7 @@
                                                 <ComboBoxItem Content="Creature Products"/>
                                                 <ComboBoxItem Content="Quiver"/>
                                                 <ComboBoxItem Content="SoulCores"/>
+                                                <ComboBoxItem Content="Fist Weapons"/>
                                             </ComboBox>
                                         </StackPanel>
                                         <StackPanel Width="320" Orientation="Horizontal" HorizontalAlignment="Left" Height="20">
@@ -320,6 +322,7 @@
                                                 <ComboBoxItem x:Name="A_FlagProfessionPaladin" Content="Paladin"/>
                                                 <ComboBoxItem x:Name="A_FlagProfessionSorcerer" Content="Sorcerer"/>
                                                 <ComboBoxItem x:Name="A_FlagProfessionDruid" Content="Druid"/>
+                                                <ComboBoxItem x:Name="A_FlagProfessionMonk" Content="Monk"/>
                                             </ComboBox>
                                             <Label Content="Min level:" Width="60" Padding="0,0,0,0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                             <xctk:IntegerUpDown x:Name="A_FlagMarketlevel" Margin="0,0,0,0" Width="90" Minimum="0"/>

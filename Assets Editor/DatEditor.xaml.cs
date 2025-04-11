@@ -494,6 +494,7 @@ namespace Assets_Editor
             A_FlagProfessionPaladin.IsChecked = false;
             A_FlagProfessionSorcerer.IsChecked = false;
             A_FlagProfessionDruid.IsChecked = false;
+            A_FlagProfessionMonk.IsChecked = false;
             A_FlagProfessionPromoted.IsChecked = false;
             if (CurrentObjectAppearance.Flags.Market != null && CurrentObjectAppearance.Flags.Market.RestrictToVocation.Count > 0)
             {
@@ -511,6 +512,8 @@ namespace Assets_Editor
                         A_FlagProfessionSorcerer.IsChecked = true;
                     else if (profession == VOCATION.Druid)
                         A_FlagProfessionDruid.IsChecked = true;
+                    else if (profession == VOCATION.Monk)
+                        A_FlagProfessionMonk.IsChecked = true;
                     else if (profession == VOCATION.Promoted)
                         A_FlagProfessionPromoted.IsChecked = true;
                 }
@@ -1232,6 +1235,7 @@ namespace Assets_Editor
                 if ((bool)A_FlagProfessionPaladin.IsChecked) CurrentObjectAppearance.Flags.Market.RestrictToVocation.Add(VOCATION.Paladin);
                 if ((bool)A_FlagProfessionSorcerer.IsChecked) CurrentObjectAppearance.Flags.Market.RestrictToVocation.Add(VOCATION.Sorcerer);
                 if ((bool)A_FlagProfessionDruid.IsChecked) CurrentObjectAppearance.Flags.Market.RestrictToVocation.Add(VOCATION.Druid);
+                if ((bool)A_FlagProfessionMonk.IsChecked) CurrentObjectAppearance.Flags.Market.RestrictToVocation.Add(VOCATION.Monk);
                 if ((bool)A_FlagProfessionPromoted.IsChecked) CurrentObjectAppearance.Flags.Market.RestrictToVocation.Add(VOCATION.Promoted);
             }
             else

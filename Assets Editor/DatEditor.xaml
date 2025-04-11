@@ -306,6 +306,7 @@
                                                 <ComboBoxItem Content="Boots"/>
                                                 <ComboBoxItem Content="Ring"/>
                                                 <ComboBoxItem Content="Arrow"/>
+                                                <ComboBoxItem Content="Dual Wielding"/>
                                             </ComboBox>
                                         </StackPanel>
                                         <StackPanel Width="320" Orientation="Horizontal" HorizontalAlignment="Left" Height="20" Margin="0,5,0,0">
@@ -349,6 +350,7 @@
                                                 <ComboBoxItem Content="Creature Products"/>
                                                 <ComboBoxItem Content="Quiver"/>
                                                 <ComboBoxItem Content="SoulCores"/>
+                                                <ComboBoxItem Content="Fist Weapons"/>
                                             </ComboBox>
                                         </StackPanel>
                                         <StackPanel Width="320" Orientation="Horizontal" HorizontalAlignment="Left" Height="20">
@@ -366,6 +368,7 @@
                                                 <CheckBox x:Name="A_FlagProfessionPaladin" Content="Paladin"/>
                                                 <CheckBox x:Name="A_FlagProfessionSorcerer" Content="Sorcerer"/>
                                                 <CheckBox x:Name="A_FlagProfessionDruid" Content="Druid"/>
+                                                <CheckBox x:Name="A_FlagProfessionMonk" Content="Monk"/>
                                                 <CheckBox x:Name="A_FlagProfessionPromoted" Content="Promoted"/>
                                             </ComboBox>
                                             <Label Content="Min level:" Width="60" Padding="0,0,0,0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>

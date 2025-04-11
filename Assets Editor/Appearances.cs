@@ -259,7 +259,7 @@ namespace Tibia.Protobuf.Appearances {
     [pbr::OriginalName("ITEM_CATEGORY_CREATURE_PRODUCTS")] CreatureProducts = 24,
     [pbr::OriginalName("ITEM_CATEGORY_QUIVER")] Quiver = 25,
     [pbr::OriginalName("ITEM_CATEGORY_TWOHANDWEAPON")] Twohandweapon = 26,
-    [pbr::OriginalName("ITEM_CATEGORY_HELMETS")] Helmets = 27,
+    [pbr::OriginalName("ITEM_CATEGORY_FIST_WEAPONS")] Fistweapons = 27,
     [pbr::OriginalName("ITEM_CATEGORY_BACKPACK")] Backpack = 28,
     [pbr::OriginalName("ITEM_CATEGORY_ONEHANDWEAPON")] Onehandweapon = 29,
     [pbr::OriginalName("ITEM_CATEGORY_ARROW")] Arrow = 30,
@@ -273,6 +273,7 @@ namespace Tibia.Protobuf.Appearances {
     [pbr::OriginalName("VOCATION_PALADIN")] Paladin = 2,
     [pbr::OriginalName("VOCATION_SORCERER")] Sorcerer = 3,
     [pbr::OriginalName("VOCATION_DRUID")] Druid = 4,
+    [pbr::OriginalName("VOCATION_MONK")] Monk = 5,
     [pbr::OriginalName("VOCATION_PROMOTED")] Promoted = 10,
   }
 
