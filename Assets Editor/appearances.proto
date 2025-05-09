@@ -125,8 +125,7 @@ message AppearanceFlags {
     optional bool expire = 55;
     optional bool expirestop = 56;
     optional bool deco_item_kit = 57;
-    reserved 58;
-    reserved 60 to 69;
+    reserved 58, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69;
     optional bool dual_wielding = 59;
     optional bool hook_south = 70;
     optional bool hook_east = 71;
