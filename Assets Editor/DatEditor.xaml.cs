@@ -30,6 +30,11 @@ namespace Assets_Editor
     /// </summary>
     public partial class DatEditor : Window
     {
+        private static uint ReserveNextId(IEnumerable<Appearance> list, uint fallbackStart)
+        {
+            uint lastId = list.Any() ? list.Max(a => a.Id) : fallbackStart - 1;
+            return lastId + 1;
+        }
         private static ObservableCollection<ShowList> ThingsOutfit = new ObservableCollection<ShowList>();
         private static ObservableCollection<ShowList> ThingsItem = new ObservableCollection<ShowList>();
         private static ObservableCollection<ShowList> ThingsEffect = new ObservableCollection<ShowList>();
@@ -1003,7 +1008,11 @@ namespace Assets_Editor
         private void FixSpritesCount()
         {
             SpriteInfo spriteInfo = CurrentObjectAppearance.FrameGroup[(int)SprGroupSlider.Value].SpriteInfo;
-            int NumSprites = (int)(spriteInfo.PatternWidth * spriteInfo.PatternHeight * spriteInfo.PatternDepth * spriteInfo.Layers * A_SprAnimation.Value);
+            if (!A_SprAnimation.Value.HasValue)
+                A_SprAnimation.Value = 1;
+
+            int animValue = A_SprAnimation.Value.Value;
+            int NumSprites = (int)(spriteInfo.PatternWidth * spriteInfo.PatternHeight * spriteInfo.PatternDepth * spriteInfo.Layers * animValue);
 
             if (spriteInfo.SpriteId.Count > NumSprites)
             {
@@ -2659,15 +2668,7 @@ namespace Assets_Editor
                     foreach (Appearance appearance in appearances.Outfit)
                     {
                         appearance.SpriteData.Clear();
-                        
-                        if (!MainWindow.appearances.Outfit.Any(a => a.Id == appearance.Id) && appearance.Id > 100)
-                        {
-                            appearance.Id = (uint)appearance.Id;
-                        }
-                        else
-                        {
-                            appearance.Id = (uint)MainWindow.appearances.Outfit[^1].Id + 1;
-                        }
+                        appearance.Id = ReserveNextId(MainWindow.appearances.Outfit, 1);
                         MainWindow.appearances.Outfit.Add(appearance.Clone());
                         ThingsOutfit.Add(new ShowList() { Id = appearance.Id });
                     }
@@ -2676,13 +2677,7 @@ namespace Assets_Editor
                     {
                         appearance.SpriteData.Clear();
 
-                        if (!MainWindow.appearances.Object.Any(a => a.Id == appearance.Id) && appearance.Id > 100)
-                        {
-                            appearance.Id = (uint)appearance.Id;
-                        } else
-                        {
-                            appearance.Id = (uint)MainWindow.appearances.Object[^1].Id + 1;
-                        }
+                        appearance.Id = ReserveNextId(MainWindow.appearances.Object, 100);
 
                         if (appearance.Flags.Market != null && appearance.Flags.Market.HasTradeAsObjectId)
                             appearance.Flags.Market.TradeAsObjectId = appearance.Id;
@@ -2699,15 +2694,7 @@ namespace Assets_Editor
                     
                     foreach (Appearance appearance in appearances.Effect)
                     {
-                        appearance.SpriteData.Clear();
-                        if (!MainWindow.appearances.Effect.Any(a => a.Id == appearance.Id) && appearance.Id > 100)
-                        {
-                            appearance.Id = (uint)appearance.Id;
-                        }
-                        else
-                        {
-                            appearance.Id = (uint)MainWindow.appearances.Effect[^1].Id + 1;
-                        }
+                        appearance.Id = ReserveNextId(MainWindow.appearances.Effect, 1);
                         MainWindow.appearances.Effect.Add(appearance.Clone());
                         ThingsEffect.Add(new ShowList() { Id = appearance.Id });
                     }
@@ -2715,14 +2702,7 @@ namespace Assets_Editor
                     foreach (Appearance appearance in appearances.Missile)
                     {
                         appearance.SpriteData.Clear();
-                        if (!MainWindow.appearances.Missile.Any(a => a.Id == appearance.Id) && appearance.Id > 100)
-                        {
-                            appearance.Id = (uint)appearance.Id;
-                        }
-                        else
-                        {
-                            appearance.Id = (uint)MainWindow.appearances.Missile[^1].Id + 1;
-                        }
+                        appearance.Id = ReserveNextId(MainWindow.appearances.Missile, 1);
                         MainWindow.appearances.Missile.Add(appearance.Clone());
                         ThingsMissile.Add(new ShowList() { Id = appearance.Id });
                     }
