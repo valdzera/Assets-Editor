@@ -26,16 +26,20 @@ namespace Assets_Editor
         public static  string _assetsPath = "";
         public static string _datPath = "";
         public static string _sprPath = "";
+        public static string _imgExportPath = "";
         public static ushort ObjectCount { get; set; }
         public static ushort OutfitCount { get; set; }
         public static ushort EffectCount { get; set; }
         public static ushort MissileCount { get; set; }
-        public ushort Version { get; set; }
 
         public static Dictionary<uint, Sprite> sprites = new Dictionary<uint, Sprite>();
         public static SpriteStorage MainSprStorage;
         readonly BackgroundWorker worker = new BackgroundWorker();
+        public static ServerSetting serverSetting = new ServerSetting();
+        public Settings SettingsList = new Settings();
+        public static OTBReader ServerOTB = new OTBReader();
         public static LogView logView = new LogView();
+        public static DatStructure datStructure = new DatStructure();
         public MainWindow()
         {
             InitializeComponent();
@@ -43,11 +47,35 @@ namespace Assets_Editor
             worker.ProgressChanged += Worker_ProgressChanged;
             worker.DoWork += Worker_DoWork;
             worker.RunWorkerCompleted += Worker_Completed;
+            LoadEditorSettings();
+            var dat = new DatStructure();
+            var allVersions = dat.GetAllVersions();
+            foreach (var version in allVersions)
+            {
+                A_ClientVersion.Items.Add(version.Number);
+            }
             logView.Closing += (sender, e) =>
             {
                 e.Cancel = true;
                 logView.Hide();
             };
+        }
+        public class ServerSetting
+        {
+            public string Name { get; set; }
+            public int Version { get; set; }
+            public bool Transparent { get; set; }
+            public string ServerPath { get; set; }
+            public string ClientPath { get; set; }
+        }
+        public class Settings
+        {
+            public List<ServerSetting> Servers { get; set; }
+        }
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            System.Windows.Application.Current.Shutdown();
         }
 
         public class Catalog
@@ -82,7 +110,26 @@ namespace Assets_Editor
         public static bool LegacyClient = false;
         public static uint DatSignature { get; set; }
         public static uint SprSignature { get; set; }
+        private void LoadEditorSettings()
+        {
+            string settingFilePath = "Settings.json";
+            if (File.Exists(settingFilePath))
+            {
+                string json = File.ReadAllText(settingFilePath);
+                SettingsList = JsonConvert.DeserializeObject<Settings>(json);
+                string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                foreach (var server in SettingsList.Servers)
+                {
+                    if (server.ServerPath.StartsWith(@"~\"))
+                        server.ServerPath = Path.Combine(localAppData, server.ServerPath.Substring(2));
 
+                    if (server.ClientPath.StartsWith(@"~\"))
+                        server.ClientPath = Path.Combine(localAppData, server.ClientPath.Substring(2));
+
+                    A_SavedVersion.Items.Add(server.Name + " " + server.Version);
+                }
+            }
+        }
         private void LoadCatalogJson()
         {
             using StreamReader r = new StreamReader(_assetsPath + "catalog-content.json");
@@ -119,15 +166,16 @@ namespace Assets_Editor
 
         private void LoadLegacyDat()
         {
-            LegacyAppearance Dat = new LegacyAppearance();
-            Dat.ReadLegacyDat(_datPath);
-            DatSignature = Dat.Signature;
-            appearances = Dat.Appearances;
-            ObjectsCount.Content = Dat.ObjectCount;
-            OutfitsCount.Content = Dat.OutfitCount;
-            EffectsCount.Content = Dat.EffectCount;
-            MissilesCount.Content = Dat.MissileCount;
-
+            using var stream = File.OpenRead(_datPath);
+            using var r = new BinaryReader(stream);
+            {
+                DatInfo info = DatStructure.ReadAppearanceInfo(r);
+                DatSignature = info.Signature;
+                ObjectsCount.Content = info.ObjectCount;
+                OutfitsCount.Content = info.OutfitCount;
+                EffectsCount.Content = info.EffectCount;
+                MissilesCount.Content = info.MissileCount;
+            }
         }
         private void LoadLegacySpr()
         {
@@ -169,6 +217,7 @@ namespace Assets_Editor
                 LoadAppearances();
                 LoadAssets.IsEnabled = true;
                 SprTransparent.Visibility = Visibility.Hidden;
+                A_ClientVersion.Visibility = Visibility.Hidden;
             }
             else if (_assetsPath != "" && File.Exists(_assetsPath + "Tibia.dat") == true && File.Exists(_assetsPath + "Tibia.spr") == true)
             {
@@ -178,6 +227,7 @@ namespace Assets_Editor
                 LoadLegacyDat();
                 LoadAssets.IsEnabled = true;
                 SprTransparent.Visibility = Visibility.Visible;
+                A_ClientVersion.Visibility = Visibility.Visible;
 
             }
             else
@@ -188,7 +238,17 @@ namespace Assets_Editor
             if (LegacyClient == false)
                 LoadSprSheet();
             else
+            {
+                LegacyAppearance Dat = new LegacyAppearance();
+                Dat.ReadLegacyDat(_datPath, serverSetting.Version);
+                appearances = Dat.Appearances;
                 LoadLegacySpr();
+                if (serverSetting.ServerPath != string.Empty)
+                {
+                    string otbPath = System.IO.Path.Combine(serverSetting.ServerPath, "data/items/items.otb");
+                    bool stats = ServerOTB.Read(otbPath);
+                }
+            }
         }
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
@@ -311,6 +371,51 @@ namespace Assets_Editor
                 return SprLists[0];
             }
             return SprLists[spriteId];
+        }
+        private void A_SavedVersion_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            int serverId = A_SavedVersion.SelectedIndex;
+            ServerSetting server = SettingsList.Servers[serverId];
+            if (server != null)
+            {
+                _assetsPath = server.ClientPath;
+                if (_assetsPath.EndsWith("\\") == false)
+                    _assetsPath += "\\";
+                AssetsPath.Text = _assetsPath;
+
+                if (server.Version >= 1300 && File.Exists(_assetsPath + "catalog-content.json") == true)
+                {
+                    LegacyClient = false;
+                    LoadCatalogJson();
+                    LoadAppearances();
+                    LoadAssets.IsEnabled = true;
+                    SprTransparent.Visibility = Visibility.Hidden;
+                    A_ClientVersion.Visibility = Visibility.Hidden;
+                }
+                else if (server.Version < 1300 && File.Exists(_assetsPath + "Tibia.dat") == true && File.Exists(_assetsPath + "Tibia.spr") == true)
+                {
+                    LegacyClient = true;
+                    _datPath = String.Format("{0}{1}", _assetsPath, "Tibia.dat");
+                    _sprPath = String.Format("{0}{1}", _assetsPath, "Tibia.spr");
+                    LoadLegacyDat();
+                    LoadAssets.IsEnabled = true;
+                    SprTransparent.Visibility = Visibility.Hidden;
+                    A_ClientVersion.Visibility = Visibility.Hidden;
+                }
+                else
+                    MessageBox.Show("You have selected a wrong assets path.");
+                serverSetting = server;
+            }
+        }
+
+        private void A_ClientVersion_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            serverSetting.Version = ushort.Parse(A_ClientVersion.SelectedItem.ToString());
+        }
+
+        private void SprTransparent_Changed(object sender, RoutedEventArgs e)
+        {
+            serverSetting.Transparent = (bool)SprTransparent.IsChecked;
         }
         public static void Log(string message, string level = "Info")
         {
